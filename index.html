@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tra Cứu Động Vật - Matrix Emerald Edition</title>
+    
+    <!-- Thư viện Bản đồ Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- FontAwesome Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Canvas Nền Matrix Texture -->
+    <canvas id="matrix-canvas"></canvas>
+
+    <!-- Header -->
+    <header>
+        <h1><span class="matrix-text">EMERALD</span> ANIMAL SEARCH</h1>
+        <div class="user-controls">
+            <span id="user-display"></span>
+            <button id="auth-btn">Đăng Nhập</button>
+        </div>
+    </header>
+
+    <!-- Modal Đăng nhập / Đăng ký -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal">
+            <h2 id="modal-title">Đăng Nhập</h2>
+            <form id="auth-form">
+                <input type="text" id="username" placeholder="Tên tài khoản" required autocomplete="off" />
+                <input type="password" id="password" placeholder="Mật khẩu" required />
+                <button type="submit" id="submit-btn">Đăng Nhập</button>
+            </form>
+            <div class="toggle-auth" id="toggle-auth">Chưa có tài khoản? Đăng ký ngay</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="container">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Nhập: Lion, Tyrannosaurus, Dodo, Deer..." autocomplete="off" />
+            <button id="search-btn">TÌM KIẾM</button>
+        </div>
+
+        <div id="result-container">
+            <!-- Dữ liệu tra cứu sẽ render vào đây -->
+        </div>
+    </main>
+
+    <!-- Modal Cửa sổ 3D Động vật -->
+    <div id="model3d-modal" class="modal-overlay hidden">
+        <div class="model3d-container">
+            <div class="model3d-header">
+                <span id="model3d-title">MÔ HÌNH 3D INTERACTIVE</span>
+                <span id="model3d-close"><i class="fa-solid fa-xmark"></i></span>
+            </div>
+            
+            <div id="canvas3d-wrapper"></div>
+
+            <div class="model3d-controls">
+                <button class="btn-action" data-action="eat"><i class="fa-solid fa-utensils"></i> Ăn</button>
+                <button class="btn-action" data-action="rest"><i class="fa-solid fa-bed"></i> Nghỉ ngơi</button>
+                <button class="btn-action" data-action="walk"><i class="fa-solid fa-person-walking"></i> Đi lại</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bong bóng Chatbot AI -->
+    <button id="chat-circle"><i class="fa-solid fa-robot"></i></button>
+
+    <div class="chat-box hidden" id="chat-box">
+        <div class="chat-box-header">
+            <div class="chat-title"><i class="fa-solid fa-brain"></i> <span>TRỢ LÝ AI BIOLOGY</span></div>
+            <span class="chat-box-toggle" id="chat-box-toggle"><i class="fa-solid fa-xmark"></i></span>
+        </div>
+        <div class="chat-box-body" id="chat-logs">
+            <div class="chat-msg ai"><div class="cm-msg-text">Xin chào! Tôi có thể giúp gì cho bạn về thế giới động vật?</div></div>
+        </div>
+        <div class="chat-input">
+            <form id="chat-form">
+                <input type="text" id="chat-input-text" placeholder="Hỏi AI..." autocomplete="off"/>
+                <button type="submit" class="chat-submit"><i class="fa-solid fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; Trang Tra Cứu Động Vật - Matrix Emerald Style</p>
+    </footer>
+
+    <!-- Thư viện Leaflet Bản đồ -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Thư viện Three.js cho Mô hình 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script src="script.js"></script>
+</body>
+</html>
