@@ -1,288 +1,132 @@
-/* Bảng màu Matrix Emerald */
 :root {
-    --bg-black: #070a08;
-    --card-bg: rgba(12, 24, 18, 0.92);
     --emerald-primary: #00f090;
-    --emerald-dark: #0f382c;
-    --emerald-border: #1b5e4a;
-    --text-color: #d1f7eb;
-    --danger-red: #ff3333;
-    --white: #ffffff;
+    --emerald-dark: #050b07;
+    --danger-red: #ff4d4d;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Courier New', Courier, monospace, 'Segoe UI', sans-serif;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    background-color: var(--bg-black);
-    color: var(--text-color);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    background-color: var(--emerald-dark);
+    color: #fff;
+    font-family: monospace, sans-serif;
     position: relative;
-    overflow-x: hidden;
+    min-height: 100vh;
 }
 
-/* Matrix Background Canvas */
+/* Con trỏ dạng cây bút khi bật Highlight */
+body.highlight-mode {
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%00f090'><path d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/></svg>"), auto !important;
+}
+
+/* Màu nền highlight chữ khi bôi đen */
+::selection {
+    background-color: #ffeb3b;
+    color: #000;
+}
+
 #matrix-canvas {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    z-index: -1;
-    opacity: 0.35;
-    pointer-events: none;
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: -1; opacity: 0.35; pointer-events: none;
 }
 
-/* Header */
-header {
-    background: rgba(7, 10, 8, 0.95);
-    border-bottom: 2px solid var(--emerald-border);
-    color: var(--emerald-primary);
-    padding: 1.2rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 0 15px rgba(0, 240, 144, 0.2);
+.navbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 30px; background: rgba(5, 11, 7, 0.95);
+    border-bottom: 1px solid var(--emerald-primary);
+    position: sticky; top: 0; z-index: 1000;
 }
 
-header h1 { font-size: 1.4rem; letter-spacing: 2px; }
-.matrix-text { color: var(--white); text-shadow: 0 0 8px var(--emerald-primary); }
+.logo { font-weight: bold; font-size: 1.2rem; color: #fff; }
+.logo span { color: var(--emerald-primary); }
+.nav-links a { color: #fff; text-decoration: none; margin: 0 10px; }
+.nav-links a:hover { color: var(--emerald-primary); }
 
-.user-controls button {
-    background-color: transparent;
-    color: var(--emerald-primary);
-    border: 1px solid var(--emerald-primary);
-    padding: 0.5rem 1.2rem;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
+.container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+.search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+.search-box input { flex: 1; padding: 12px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--emerald-primary); color: var(--emerald-primary); outline: none; }
+
+.btn-primary {
+    background: transparent; border: 1px solid var(--emerald-primary);
+    color: var(--emerald-primary); padding: 10px 20px; cursor: pointer;
+    font-family: monospace; transition: 0.2s;
 }
+.btn-primary:hover { background: var(--emerald-primary); color: #000; }
 
-.user-controls button:hover {
-    background-color: var(--emerald-primary);
-    color: var(--bg-black);
-    box-shadow: 0 0 10px var(--emerald-primary);
-}
-
-/* Main Layout */
-.container {
-    max-width: 900px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-    width: 100%;
-    flex: 1;
-    z-index: 1;
-}
-
-/* Modal Đăng nhập / Đăng ký & 3D */
-.modal-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(4px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal {
-    background: var(--card-bg);
-    padding: 2rem;
-    border-radius: 8px;
-    width: 340px;
-    border: 1px solid var(--emerald-primary);
-    box-shadow: 0 0 20px rgba(0, 240, 144, 0.3);
-}
-
-.modal h2 { margin-bottom: 1.5rem; color: var(--emerald-primary); text-align: center; }
-
-.modal input {
-    width: 100%; padding: 0.8rem; margin-bottom: 1.2rem;
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid var(--emerald-border);
-    border-radius: 4px; color: var(--emerald-primary); outline: none;
-}
-
-.modal button {
-    width: 100%; padding: 0.8rem;
-    background: var(--emerald-dark); color: var(--emerald-primary);
-    border: 1px solid var(--emerald-primary); border-radius: 4px;
-    font-weight: bold; cursor: pointer;
-}
-
-.modal button:hover { background: var(--emerald-primary); color: var(--bg-black); }
-.toggle-auth { margin-top: 1rem; text-align: center; font-size: 0.85rem; color: var(--emerald-primary); cursor: pointer; text-decoration: underline; }
-.hidden { display: none !important; }
-
-/* Search Box */
-.search-box { display: flex; gap: 10px; margin-bottom: 2rem; }
-
-.search-box input {
-    flex: 1; padding: 0.9rem;
-    background: var(--card-bg); border: 1px solid var(--emerald-border);
-    border-radius: 4px; font-size: 1rem; color: var(--white); outline: none;
-}
-
-.search-box button {
-    padding: 0.9rem 1.8rem; background-color: var(--emerald-dark);
-    color: var(--emerald-primary); border: 1px solid var(--emerald-primary);
-    border-radius: 4px; font-size: 1rem; cursor: pointer; font-weight: bold;
-}
-
-.search-box button:hover {
-    background-color: var(--emerald-primary); color: var(--bg-black);
-    box-shadow: 0 0 12px var(--emerald-primary);
-}
-
-/* Thẻ Thông Tin Tự Co Giãn */
 .card {
-    background: var(--card-bg); border-radius: 8px; overflow: hidden;
-    border: 1px solid var(--emerald-border);
-    box-shadow: 0 0 15px rgba(0, 240, 144, 0.15);
-    display: flex; flex-direction: column; height: auto;
+    background: rgba(5, 11, 7, 0.85); border: 1px solid var(--emerald-primary);
+    padding: 20px; border-radius: 8px; margin-bottom: 20px; position: relative;
 }
 
-.card-img-wrapper { width: 100%; background-color: #000; display: flex; justify-content: center; }
-.card img { width: 100%; height: auto; object-fit: contain; display: block; border-bottom: 1px solid var(--emerald-border); }
-.card-content { padding: 1.5rem; }
-.card-content h3 { color: var(--emerald-primary); margin-bottom: 0.8rem; font-size: 1.8rem; }
-
-.extinct-badge {
-    display: inline-block; background-color: var(--danger-red);
-    color: white; padding: 3px 8px; font-size: 0.8rem; border-radius: 3px; margin-left: 10px;
+/* Nút Favorite Ngôi sao */
+.fav-star {
+    position: absolute; top: 15px; right: 20px; font-size: 1.8rem;
+    cursor: pointer; color: #555; transition: 0.2s; user-select: none;
 }
+.fav-star.active { color: #ffca28; text-shadow: 0 0 10px #ffca28; }
 
-.section-title {
-    color: var(--emerald-primary); border-bottom: 1px solid var(--emerald-border);
-    padding-bottom: 5px; margin: 1.5rem 0 1rem 0; font-size: 1.2rem; text-transform: uppercase;
+/* Pop-up Bút Highlight nằm bên trên Chatbot */
+#highlighter-btn {
+    position: fixed; bottom: 80px; right: 20px; width: 50px; height: 50px;
+    background: #000; border: 2px solid var(--emerald-primary); border-radius: 50%;
+    display: flex; justify-content: center; align-items: center; font-size: 1.3rem;
+    cursor: pointer; z-index: 1400; transition: 0.2s;
 }
+#highlighter-btn.active { background: var(--emerald-primary); color: #000; box-shadow: 0 0 12px var(--emerald-primary); }
 
-#map { width: 100%; height: 350px; border-radius: 6px; border: 1px solid var(--emerald-border); z-index: 10; }
+#chat-circle { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background: #000; border: 2px solid var(--emerald-primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; cursor: pointer; z-index: 1500; }
+#chat-box { position: fixed; bottom: 140px; right: 20px; width: 320px; height: 400px; background: #070e0a; border: 1px solid var(--emerald-primary); border-radius: 8px; display: flex; flex-direction: column; z-index: 1500; }
+#chat-box.hidden { display: none !important; }
+.chat-header { background: var(--emerald-primary); color: #000; padding: 10px; font-weight: bold; display: flex; justify-content: space-between; }
+#chat-logs { flex: 1; padding: 10px; overflow-y: auto; font-size: 0.85rem; }
+.user-msg { color: #fff; text-align: right; margin: 5px 0; }
+.bot-msg { color: var(--emerald-primary); text-align: left; margin: 5px 0; }
+#chat-form { display: flex; border-top: 1px solid var(--emerald-primary); }
+#chat-input-text { flex: 1; padding: 8px; background: #000; border: none; color: #fff; outline: none; }
+#chat-form button { background: var(--emerald-primary); border: none; padding: 8px 12px; cursor: pointer; }
 
-/* Anatomy Interactive */
-.anatomy-container {
-    position: relative; width: 100%; background: #000;
-    border: 1px solid var(--emerald-border); border-radius: 6px;
-    overflow: hidden; display: flex; justify-content: center;
+/* POP-UP PROFILE KIỂU GOOGLE CHROME */
+.avatar-btn, .avatar-large, .avatar-huge {
+    background: #673ab7; color: #fff; font-weight: bold; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
 }
+.avatar-btn { width: 36px; height: 36px; font-size: 1rem; border: 2px solid var(--emerald-primary); }
+.avatar-large { width: 60px; height: 60px; font-size: 1.8rem; margin: 0 auto 10px; }
+.avatar-huge { width: 80px; height: 80px; font-size: 2.5rem; }
 
-.anatomy-img { width: 100%; max-height: 450px; object-fit: contain; opacity: 0.85; }
-
-.anatomy-point {
-    position: absolute; width: 18px; height: 18px;
-    background-color: var(--emerald-primary); border: 2px solid #fff;
-    border-radius: 50%; transform: translate(-50%, -50%); cursor: pointer;
-    box-shadow: 0 0 10px var(--emerald-primary); transition: transform 0.2s;
+.google-popup {
+    position: absolute; top: 50px; right: 0; width: 300px;
+    background: #202124; border-radius: 16px; border: 1px solid #3c4043;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5); z-index: 2000; overflow: hidden;
 }
+.google-popup.hidden { display: none; }
+.google-popup-header { padding: 20px; text-align: center; background: #2d2f31; border-bottom: 1px solid #3c4043; }
+.popup-name { font-weight: bold; color: #e8eaed; font-size: 1rem; }
+.popup-email { font-size: 0.8rem; color: #9aa0a6; }
+.google-popup-body { padding: 8px 0; }
+.popup-item { padding: 12px 20px; font-size: 0.85rem; color: #e8eaed; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.popup-item:hover { background: #3c4043; }
 
-.anatomy-point:hover { transform: translate(-50%, -50%) scale(1.4); background-color: #fff; }
+/* MODAL HỒ SƠ TÀI KHOẢN (PROFILE PAGE) */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 3000; }
+.modal-overlay.hidden { display: none !important; }
+.modal-content { background: #070e0a; border: 1px solid var(--emerald-primary); padding: 25px; width: 340px; border-radius: 12px; text-align: center; position: relative; }
 
-.anatomy-point::after {
-    content: attr(data-part); position: absolute; bottom: 130%; left: 50%;
-    transform: translateX(-50%); background: rgba(0, 0, 0, 0.9);
-    color: var(--emerald-primary); padding: 5px 10px; border: 1px solid var(--emerald-primary);
-    border-radius: 4px; white-space: nowrap; font-size: 0.85rem; opacity: 0;
-    pointer-events: none; transition: opacity 0.3s; box-shadow: 0 0 8px rgba(0, 240, 144, 0.5);
-}
+.profile-page-content { width: 700px; max-width: 90vw; max-height: 85vh; overflow-y: auto; }
+.close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: var(--emerald-primary); }
+.profile-header-card { display: flex; align-items: center; gap: 20px; text-align: left; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; }
+.profile-stats { display: flex; gap: 15px; margin-top: 15px; }
+.stat-box { flex: 1; background: rgba(0, 240, 144, 0.1); border: 1px solid var(--emerald-primary); padding: 12px; border-radius: 8px; }
+.stat-box span { font-size: 1.8rem; font-weight: bold; display: block; color: var(--emerald-primary); }
 
-.anatomy-point:hover::after { opacity: 1; }
+/* GRID HIỂN THỊ YOUTUBE CARD STYLE */
+.youtube-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 10px; }
+.youtube-card { background: #121212; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; text-align: left; transition: 0.2s; }
+.youtube-card:hover { transform: translateY(-3px); border-color: var(--emerald-primary); }
+.youtube-thumb { height: 110px; background: #222; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.youtube-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.youtube-info { padding: 10px; }
+.youtube-title { font-size: 0.9rem; font-weight: bold; color: #fff; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.youtube-desc { font-size: 0.75rem; color: #aaa; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-/* Cửa sổ 3D Modal */
-.model3d-container {
-    background: var(--card-bg); border: 2px solid var(--emerald-primary);
-    border-radius: 10px; width: 550px; max-width: 90vw;
-    box-shadow: 0 0 25px rgba(0, 240, 144, 0.4); display: flex; flex-direction: column; overflow: hidden;
-}
-
-.model3d-header {
-    background: var(--bg-black); padding: 12px 20px; display: flex;
-    justify-content: space-between; align-items: center; border-bottom: 1px solid var(--emerald-border);
-    color: var(--emerald-primary); font-weight: bold;
-}
-
-#model3d-close { cursor: pointer; font-size: 1.2rem; color: var(--emerald-border); }
-#model3d-close:hover { color: var(--emerald-primary); }
-#canvas3d-wrapper { width: 100%; height: 350px; background: #050806; }
-
-.model3d-controls {
-    display: flex; justify-content: space-around; padding: 15px;
-    background: var(--bg-black); border-top: 1px solid var(--emerald-border); gap: 10px;
-}
-
-.btn-action {
-    flex: 1; padding: 10px; background: var(--emerald-dark);
-    color: var(--emerald-primary); border: 1px solid var(--emerald-primary);
-    border-radius: 5px; font-weight: bold; cursor: pointer; display: flex;
-    align-items: center; justify-content: center; gap: 8px; transition: all 0.3s;
-}
-
-.btn-action:hover { background: var(--emerald-primary); color: var(--bg-black); box-shadow: 0 0 10px var(--emerald-primary); }
-
-/* Bong Bóng Chatbot AI */
-#chat-circle {
-    position: fixed; bottom: 25px; right: 25px;
-    background: var(--emerald-primary); color: var(--bg-black);
-    width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer;
-    box-shadow: 0 0 15px rgba(0, 240, 144, 0.5); font-size: 24px; z-index: 999; transition: transform 0.3s;
-}
-
-#chat-circle:hover { transform: scale(1.1); }
-
-.chat-box {
-    position: fixed; right: 25px; bottom: 95px; width: 360px; max-width: 85vw;
-    height: 480px; max-height: 70vh; background: var(--card-bg);
-    border: 1px solid var(--emerald-primary); border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 240, 144, 0.25); display: flex; flex-direction: column;
-    overflow: hidden; z-index: 1000;
-}
-
-.chat-box-header {
-    background: var(--bg-black); height: 50px; border-bottom: 1px solid var(--emerald-border);
-    color: var(--emerald-primary); display: flex; justify-content: space-between;
-    align-items: center; padding: 0 15px; font-weight: bold;
-}
-
-.chat-box-toggle { cursor: pointer; color: var(--emerald-border); }
-.chat-box-toggle:hover { color: var(--emerald-primary); }
-
-.chat-box-body { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-.chat-msg { display: flex; max-width: 85%; }
-.chat-msg.user { align-self: flex-end; }
-.chat-msg.ai { align-self: flex-start; }
-
-.cm-msg-text { padding: 10px 12px; border-radius: 6px; font-size: 0.9rem; line-height: 1.4; }
-.chat-msg.user .cm-msg-text { background: var(--emerald-primary); color: var(--bg-black); font-weight: 500; }
-.chat-msg.ai .cm-msg-text { background: var(--emerald-dark); color: var(--text-color); border: 1px solid var(--emerald-border); }
-
-.chat-input { padding: 10px; background: var(--bg-black); border-top: 1px solid var(--emerald-border); }
-.chat-input form { display: flex; gap: 8px; }
-
-.chat-input input {
-    flex: 1; background: var(--card-bg); border: 1px solid var(--emerald-border);
-    padding: 8px 12px; border-radius: 4px; color: var(--white); outline: none;
-}
-
-.chat-input input:focus { border-color: var(--emerald-primary); }
-
-.chat-submit {
-    background: var(--emerald-dark); color: var(--emerald-primary);
-    border: 1px solid var(--emerald-primary); padding: 0 14px; border-radius: 4px; cursor: pointer;
-}
-
-.chat-submit:hover { background: var(--emerald-primary); color: var(--bg-black); }
-
-footer {
-    background: rgba(7, 10, 8, 0.95); border-top: 1px solid var(--emerald-border);
-    color: var(--emerald-border); text-align: center; padding: 1rem; font-size: 0.85rem; margin-top: 2rem;
-}
-
-.status-msg {
-    text-align: center; padding: 1.5rem; background: var(--card-bg);
-    border: 1px dashed var(--emerald-border); border-radius: 4px; color: var(--emerald-primary);
-}
+#map { height: 300px; width: 100%; margin-top: 10px; border: 1px solid var(--emerald-primary); z-index: 1; }

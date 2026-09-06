@@ -3,103 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tra Cứu Động Vật - Matrix Emerald Edition</title>
+    <title>EMERALD ANIMAL SEARCH</title>
     
-    <!-- Thư viện Bản đồ Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- FontAwesome Icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
-
-    <!-- Canvas Nền Matrix Texture -->
     <canvas id="matrix-canvas"></canvas>
 
-    <!-- Header -->
-    <header>
-        <h1><span class="matrix-text">EMERALD</span> ANIMAL SEARCH</h1>
-        <div class="user-controls">
-            <span id="user-display"></span>
-            <button id="auth-btn">Đăng Nhập</button>
+    <header class="navbar">
+        <div class="logo">EMERALD <span>ANIMAL SEARCH</span></div>
+        <nav class="nav-links">
+            <a href="#sec-info">Thông tin</a>
+            <a href="#sec-habitat">Nơi sinh sống</a>
+            <a href="#sec-weather">Thời tiết</a>
+            <a href="#sec-model3d">Mô hình 3D</a>
+        </nav>
+        <div class="nav-right" style="position: relative;">
+            <div id="user-display"></div>
+            <button id="auth-btn" class="btn-primary">Đăng Nhập</button>
+
+            <!-- Pop-up Hồ sơ kiểu Google Chrome -->
+            <div id="google-profile-popup" class="google-popup hidden">
+                <div class="google-popup-header">
+                    <div id="popup-avatar" class="avatar-large">U</div>
+                    <div id="popup-name" class="popup-name">User Name</div>
+                    <div id="popup-email" class="popup-email">user@gmail.com</div>
+                </div>
+                <div class="google-popup-body">
+                    <div class="popup-item" id="btn-manage-account">
+                        <i>⚙️</i> Quản lý Tài khoản Google của bạn
+                    </div>
+                    <div class="popup-item">
+                        <i>🔑</i> Mật khẩu và tính năng tự động điền
+                    </div>
+                    <div class="popup-item">
+                        <i>🎨</i> Tuỳ chỉnh hồ sơ
+                    </div>
+                    <hr>
+                    <div class="popup-item" id="btn-popup-logout" style="color: var(--danger-red);">
+                        <i>🚪</i> Đăng xuất tài khoản
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
-    <!-- Modal Đăng nhập / Đăng ký -->
-    <div id="modal-overlay" class="modal-overlay hidden">
-        <div class="modal">
-            <h2 id="modal-title">Đăng Nhập</h2>
-            <form id="auth-form">
-                <input type="text" id="username" placeholder="Tên tài khoản" required autocomplete="off" />
-                <input type="password" id="password" placeholder="Mật khẩu" required />
-                <button type="submit" id="submit-btn">Đăng Nhập</button>
-            </form>
-            <div class="toggle-auth" id="toggle-auth">Chưa có tài khoản? Đăng ký ngay</div>
-        </div>
-    </div>
-
-    <!-- Main Container -->
     <main class="container">
         <div class="search-box">
-            <input type="text" id="search-input" placeholder="Nhập: Lion, Tyrannosaurus, Dodo, Deer..." autocomplete="off" />
-            <button id="search-btn">TÌM KIẾM</button>
+            <input type="text" id="search-input" placeholder="Nhập tên con vật (VD: lion, deer, t-rex)...">
+            <button id="search-btn" class="btn-primary">TÌM KIẾM</button>
         </div>
 
         <div id="result-container">
-            <!-- Dữ liệu tra cứu sẽ render vào đây -->
+            <div class="card">Hãy nhập tên con vật để tìm kiếm dữ liệu.</div>
         </div>
     </main>
 
-    <!-- Modal Cửa sổ 3D Động vật -->
-    <div id="model3d-modal" class="modal-overlay hidden">
-        <div class="model3d-container">
-            <div class="model3d-header">
-                <span id="model3d-title">MÔ HÌNH 3D INTERACTIVE</span>
-                <span id="model3d-close"><i class="fa-solid fa-xmark"></i></span>
-            </div>
-            
-            <div id="canvas3d-wrapper"></div>
+    <!-- Nút Bút Highlight Pop-up -->
+    <div id="highlighter-btn" title="Bật/Tắt chế độ tô vàng thông tin">✏️</div>
 
-            <div class="model3d-controls">
-                <button class="btn-action" data-action="eat"><i class="fa-solid fa-utensils"></i> Ăn</button>
-                <button class="btn-action" data-action="rest"><i class="fa-solid fa-bed"></i> Nghỉ ngơi</button>
-                <button class="btn-action" data-action="walk"><i class="fa-solid fa-person-walking"></i> Đi lại</button>
-            </div>
+    <!-- Floating Chatbot -->
+    <div id="chat-circle">🤖</div>
+    <div id="chat-box" class="hidden">
+        <div class="chat-header">
+            <span>AI ASSISTANT</span>
+            <span id="chat-box-toggle">&times;</span>
         </div>
+        <div id="chat-logs"></div>
+        <form id="chat-form">
+            <input type="text" id="chat-input-text" placeholder="Hỏi AI..." required>
+            <button type="submit">Gửi</button>
+        </form>
     </div>
 
-    <!-- Bong bóng Chatbot AI -->
-    <button id="chat-circle"><i class="fa-solid fa-robot"></i></button>
-
-    <div class="chat-box hidden" id="chat-box">
-        <div class="chat-box-header">
-            <div class="chat-title"><i class="fa-solid fa-brain"></i> <span>TRỢ LÝ AI BIOLOGY</span></div>
-            <span class="chat-box-toggle" id="chat-box-toggle"><i class="fa-solid fa-xmark"></i></span>
-        </div>
-        <div class="chat-box-body" id="chat-logs">
-            <div class="chat-msg ai"><div class="cm-msg-text">Xin chào! Tôi có thể giúp gì cho bạn về thế giới động vật?</div></div>
-        </div>
-        <div class="chat-input">
-            <form id="chat-form">
-                <input type="text" id="chat-input-text" placeholder="Hỏi AI..." autocomplete="off"/>
-                <button type="submit" class="chat-submit"><i class="fa-solid fa-paper-plane"></i></button>
+    <!-- Modal Đăng nhập / Đăng ký -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2 id="modal-title">Đăng Nhập</h2>
+            <form id="auth-form">
+                <input type="text" id="username" placeholder="Tên tài khoản hoặc Email" required>
+                <input type="password" id="password" placeholder="Mật khẩu" required>
+                <button type="submit" id="submit-btn" class="btn-primary">Đăng Nhập</button>
             </form>
+            <p id="toggle-auth">Chưa có tài khoản? Đăng ký ngay</p>
         </div>
     </div>
 
-    <footer>
-        <p>&copy; Trang Tra Cứu Động Vật - Matrix Emerald Style</p>
-    </footer>
+    <!-- Modal Trang Hồ Sơ Cá Nhân (Profile Page Sub-window) -->
+    <div id="profile-page-modal" class="modal-overlay hidden">
+        <div class="modal-content profile-page-content">
+            <span id="close-profile-modal" class="close-btn">&times;</span>
+            <div class="profile-header-card">
+                <div id="profile-big-avatar" class="avatar-huge">U</div>
+                <div>
+                    <h2 id="profile-page-name">User Name</h2>
+                    <p id="profile-page-email" style="color:#aaa; font-size:0.85rem;">user@gmail.com</p>
+                </div>
+            </div>
 
-    <!-- Thư viện Leaflet Bản đồ -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
-    <!-- Thư viện Three.js cho Mô hình 3D -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+            <div class="profile-stats">
+                <div class="stat-box">
+                    <span id="stat-search-count">0</span>
+                    <small>Số lần tra cứu</small>
+                </div>
+                <div class="stat-box">
+                    <span id="stat-fav-count">0</span>
+                    <small>Đã Favourite</small>
+                </div>
+            </div>
 
-    <script src="script.js"></script>
+            <h3 style="margin: 20px 0 10px; color: var(--emerald-primary); text-align: left;">Mục Yêu Thích (Favourite Cards)</h3>
+            <div id="fav-youtube-grid" class="youtube-grid">
+                <!-- Các thẻ favourite dạng cửa sổ Youtube hiển thị ở đây -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
